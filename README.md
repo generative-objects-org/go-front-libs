@@ -16,7 +16,7 @@ dependencies: {
 }
 ```
 
-then running `npm install` from a command line console where your SSH Agent is _logged in_. This means the machine where you run that should already have a (SSH Key generated)[ https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/] and added to your Gitlab account.
+then running `npm install` from a command line console where your SSH Agent is _logged in_. This means the machine where you run that should already have a [SSH Key generated](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) and added to your Gitlab account.
 
 In order to be logged in in the console, if you SSH Key has a passphrase, you'll need to run the following:
 ``` bash
