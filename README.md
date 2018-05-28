@@ -44,5 +44,3 @@ A set of unit test is provided. Everything is configured so that you can add tes
     
     c. `npm run cover` will run the first command and generate a coverage report. A summary is visilble in the console and a full coverage report is available under the `test/coverage/lcov-report/` folder, just open the `index.html` file and browse the report to see which lines of codes (or branches) are not covered.
 
-
-
