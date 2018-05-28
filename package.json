@@ -30,7 +30,7 @@
         "all": false,
         "reporter": [
             "lcov",
-            "text-summary"
+            "text"
         ],
         "report-dir": "./test/coverage",
         "exclude": [
