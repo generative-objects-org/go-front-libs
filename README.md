@@ -1,6 +1,4 @@
-[![pipeline status](https://git.generativeobjects.com/go-core/go-front-libs/badges/master/pipeline.svg)](https://git.generativeobjects.com/go-core/go-front-libs/commits/master)
-
-[![coverage report](https://git.generativeobjects.com/go-core/go-front-libs/badges/master/coverage.svg)](https://git.generativeobjects.com/go-core/go-front-libs/commits/master)
+[![pipeline status](https://git.generativeobjects.com/go-core/go-front-libs/badges/master/pipeline.svg)](https://git.generativeobjects.com/go-core/go-front-libs/commits/master) [![coverage report](https://git.generativeobjects.com/go-core/go-front-libs/badges/master/coverage.svg)](https://git.generativeobjects.com/go-core/go-front-libs/commits/master)
 
 This repository contains the libraries developped by Generative Objects for GO generated apps.
 

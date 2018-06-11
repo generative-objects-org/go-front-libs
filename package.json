@@ -1,6 +1,6 @@
 {
     "name": "go-front-libs",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "JS Libraries for GO generated apps",
     "author": "GenerativeObjects",
     "private": true,
@@ -16,7 +16,7 @@
         "cross-env": "^5.1.6",
         "mocha": "^5.2.0",
         "mocha-webpack": "^1.1.0",
-        "nyc": "^11.8.0",
+        "nyc": "^11.9.0",
         "webpack": "^4.10.0",
         "webpack-cli": "^3.0.3"
     },
