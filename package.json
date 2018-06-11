@@ -4,6 +4,7 @@
     "description": "JS Libraries for GO generated apps",
     "author": "GenerativeObjects",
     "private": true,
+    "main": "dist/go-front-libs.js",
     "devDependencies": {
         "babel": "^6.23.0",
         "babel-core": "^6.26.3",
@@ -16,12 +17,14 @@
         "mocha": "^5.2.0",
         "mocha-webpack": "^1.1.0",
         "nyc": "^11.8.0",
-        "webpack": "^3.6.0"
+        "webpack": "^4.10.0",
+        "webpack-cli": "^3.0.3"
     },
     "dependencies": {
         "mersennetwister": "^0.2.3"
     },
     "scripts": {
+        "build": "webpack",
         "test": "mocha --require babel-register --require babel-polyfill \"test/unit/**/*.js\"",
         "test-watch": "mocha-webpack --watch \"test/unit/**/*.js\"",
         "cover": "cross-env NODE_ENV=test nyc mocha --require babel-register --require babel-polyfill \"test/unit/**/*.js\""
