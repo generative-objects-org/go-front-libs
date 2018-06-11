@@ -2,3 +2,4 @@ node_modules/
 .vscode/
 Thumbs.db
 .nyc_output
+test/coverage/
