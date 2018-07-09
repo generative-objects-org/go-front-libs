@@ -33,11 +33,10 @@ In order to be logged in in the console, if you SSH Key has a passphrase, you'll
 To use any methods exported from one of the libraries in `./libs/`, you'll need to add an `import` statement at the beggining of the corresponding file, a bit like this:
 
 ```javascript
-import {
-    buildDataset,
-    addEntitiesToDataset
-} from 'go-front-libs/libs/go-dataset-builder';
+import { GOUuuid } from 'go-front-libs';
 ```
+
+and then use any of the methods exposed by the corresponding module with `GOUuuid.newGuid()`
 
 # Tests
 
