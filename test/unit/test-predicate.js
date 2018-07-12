@@ -14,44 +14,68 @@ describe('GO Predicate', function() {
         // Let's try converting all these operators
         let conditionListBinaryOperators = [
             {
-                left: 'CustomerId',
+                left: { value: 'CustomerId' },
                 operator: '==',
-                right: '"2374669d-eb56-4999-b4d5-30cbcfef32aa"',
+                right: {
+                    value: '2374669d-eb56-4999-b4d5-30cbcfef32aa',
+                    needsQuote: true
+                },
                 order: 1,
                 result: 'CustomerId == "2374669d-eb56-4999-b4d5-30cbcfef32aa"'
             },
             {
-                left: 'Amount',
+                left: {
+                    value: 'Amount'
+                },
                 operator: '<',
-                right: '41',
+                right: {
+                    value: '41'
+                },
                 order: 4,
                 result: 'Amount < 41'
             },
             {
-                left: 'Test',
+                left: {
+                    value: 'Test'
+                },
                 operator: '!=',
-                right: '1',
+                right: {
+                    value: '1'
+                },
                 order: 2,
                 result: 'Test != 1'
             },
             {
-                left: 'Amount',
+                left: {
+                    value: 'Amount'
+                },
                 operator: '<=',
-                right: '45',
+                right: {
+                    value: '45'
+                },
                 order: 3,
                 result: 'Amount <= 45'
             },
             {
-                left: 'Title',
+                left: {
+                    value: 'Title'
+                },
                 operator: '>=',
-                right: '"AA"',
+                right: {
+                    value: 'AA',
+                    needsQuote: true
+                },
                 order: 6,
                 result: 'Title >= "AA"'
             },
             {
-                left: 'Amount',
+                left: {
+                    value: 'Amount'
+                },
                 operator: '>',
-                right: '78',
+                right: {
+                    value: '78'
+                },
                 order: 5,
                 result: 'Amount > 78'
             }
@@ -71,23 +95,36 @@ describe('GO Predicate', function() {
 
         let conditionListStringOperator = [
             {
-                left: 'Name',
+                left: { value: 'Name' },
                 operator: 'StartsWith',
-                right: '"Bla"',
+                right: {
+                    value: 'Bla',
+                    needsQuote: true
+                },
                 order: 1,
                 result: 'Name.StartsWith("Bla")'
             },
             {
-                left: 'FirstName',
+                left: {
+                    value: 'FirstName'
+                },
                 operator: 'EndsWith',
-                right: '"Bla"',
+                right: {
+                    value: 'Bla',
+                    needsQuote: true
+                },
                 order: 2,
                 result: 'FirstName.EndsWith("Bla")'
             },
             {
-                left: 'LastName',
+                left: {
+                    value: 'LastName'
+                },
                 operator: 'Contains',
-                right: '"Bla"',
+                right: {
+                    value: 'Bla',
+                    needsQuote: true
+                },
                 order: 3,
                 result: 'LastName.Contains("Bla")'
             }
@@ -136,9 +173,9 @@ describe('GO Predicate', function() {
 
         it('should negate condition', function() {
             predicateToString({
-                left: 'Id',
+                left: { value: 'Id', needsQuote: false },
                 operator: '==',
-                right: 2,
+                right: { value: 2 },
                 negate: true
             }).should.equal('!(Id == 2)');
         });
@@ -154,7 +191,7 @@ describe('GO Predicate', function() {
         it('should fail with invalid condition operator', function() {
             (function() {
                 predicateToString({
-                    left: 'A',
+                    left: { value: 'A' },
                     operator: 'xx',
                     right: 1
                 });

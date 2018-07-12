@@ -63,12 +63,18 @@ export function predicateToString(pred) {
             throw new Error(`Operator ${pred.operator} is not valid`);
 
         let result = '';
+        let left = pred.left.needsQuote
+            ? `"${pred.left.value}"`
+            : pred.left.value;
+        let right = pred.right.needsQuote
+            ? `"${pred.right.value}"`
+            : pred.right.value;
         if (
             operatorToTypeClassification[pred.operator] === OPERATOR_TYPE_BINARY
         ) {
-            result = `${pred.left} ${pred.operator} ${pred.right}`;
+            result = `${left} ${pred.operator} ${right}`;
         } else {
-            result = `${pred.left}.${pred.operator}(${pred.right})`;
+            result = `${left}.${pred.operator}(${right})`;
         }
 
         if (pred.negate) return `!(${result})`;
@@ -77,6 +83,8 @@ export function predicateToString(pred) {
         throw new Error('Predicate is neither a Condition or ConditionGroup');
     }
 }
+
+export function applyPredicateToVuexORMQuery(pred) {}
 
 /****** HELPER ******/
 
