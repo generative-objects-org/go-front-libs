@@ -84,16 +84,14 @@ export function predicateToString(pred) {
     }
 }
 
-export function applyPredicateToVuexORMQuery(pred) {}
-
 /****** HELPER ******/
 
-function isConditionGroup(pred) {
+export function isConditionGroup(pred) {
     return (
         pred.hasOwnProperty('conditions') && pred.conditions instanceof Array
     );
 }
 
-function isCondition(pred) {
+export function isCondition(pred) {
     return pred.hasOwnProperty('left') && pred.hasOwnProperty('right');
 }
