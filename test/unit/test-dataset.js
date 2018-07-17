@@ -1,4 +1,5 @@
 import * as datasetBuilder from '../../src/libs/go-dataset-builder';
+import 'chai/register-should';
 
 describe('GO Dataset', function() {
     describe('buildPrimaryKey', function() {

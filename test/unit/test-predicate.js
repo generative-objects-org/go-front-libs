@@ -1,4 +1,5 @@
 import { predicateToString } from '../../src/libs/go-predicate-model';
+import 'chai/register-should';
 
 describe('GO Predicate', function() {
     describe('predicateToString', function() {
