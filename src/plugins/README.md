@@ -1,5 +1,3 @@
-{::options parse_block_html="true" /}
-
 # Plugins
 
 This folder contains the different plugins used in GO generated apps.
@@ -30,5 +28,5 @@ const user = store.getters['entities/users/query']().applyFilter({
 
 Note: the `applyFilter` version is clearly more verbose than the original Vuex ORM one, but its use is mostly indented to convert generated Condition & ConditionGroup into the Vuex ORM Query language. If one needs to write custom code using directly the Vuex ORM library, s/he can use the [Query builder syntax](https://vuex-orm.github.io/vuex-orm/guide/store/retrieving-data.html#query-builder) to do so.
 
-Currently, this plugin doesn't work well with nested ConditionGroup (ie groups of the form `(A && B) || (C && D)`) due to a bug in the original library. It works for simple conditions & one-level condition groups.
-{: .alert .alert-warning}
+> ⚠️ Currently, this plugin doesn't work well with nested ConditionGroup (ie groups of the form `(A && B) || (C && D)`) due to a bug in the original library. It works for simple conditions & one-level condition groups.
+
