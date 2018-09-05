@@ -1,4 +1,4 @@
-import { predicateToString } from './libs/go-predicate-model';
+import { predicateToString } from '../libs/go-predicate-model';
 
 export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
     let { entityName, includes, internalName } = mixinOptions;
