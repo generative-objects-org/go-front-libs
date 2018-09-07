@@ -1,4 +1,4 @@
-import * as datasetBuilder from '../../src/libs/go-dataset-builder';
+import * as datasetBuilder from '../../src/libs/go-api-adapter';
 import 'chai/register-should';
 
 describe('GO Dataset', function() {
