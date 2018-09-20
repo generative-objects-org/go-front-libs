@@ -17,7 +17,7 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
             return { ['isLoading' + uniqueName + 'Collection']: false };
         },
         computed: {
-            ['local' + uniqueName + 'Collection']: function() {
+            ['current' + uniqueName + 'Collection']: function() {
                 let query = this.$store.getters[
                     'entities/' + toLowerEntityName + '/query'
                 ]();

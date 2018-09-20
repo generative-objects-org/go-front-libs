@@ -16,11 +16,11 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
             return {
                 [localObjectVariable]: null,
                 storeObject: null,
-                ['isLoading' + uniqueName]: false
+                ['isLoading' + uniqueName + 'Item']: false
             }; // local object // store object
         },
         computed: {
-            currentItem() {
+            ['current' + uniqueName + 'Item']: function() {
                 if (this[localObjectVariable] !== null)
                     return this[localObjectVariable];
                 else return this.storeObject;
@@ -33,18 +33,18 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
         },
         methods: {
             ['load' + uniqueName]: function(pk) {
-                this['isLoading' + uniqueName] = true;
+                this['isLoading' + uniqueName + 'Item'] = true;
                 return this.$store
                     .dispatch('crud/get', {
                         entityName: toLowerEntityName,
                         pks: [pk]
                     })
                     .then(elt => {
-                        this['isLoading' + uniqueName] = false;
+                        this['isLoading' + uniqueName + 'Item'] = false;
                         this.storeObject = elt;
                     })
                     .catch(err => {
-                        this['isLoading' + uniqueName] = false;
+                        this['isLoading' + uniqueName + 'Item'] = false;
                         throw err;
                     });
             }

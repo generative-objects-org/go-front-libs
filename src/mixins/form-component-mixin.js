@@ -33,7 +33,7 @@ export function FormComponentMixinFactory(mixinOptions) {
         },
         computed: {
             // This will overwrite the existing "currentItem" computed added by SingleEntityComponentMixin
-            currentItem() {
+            ['current' + uniqueName + 'Item']: function() {
                 if (this[localObjectVariable] !== null)
                     return this[localObjectVariable];
                 else return this.storeObject;
@@ -49,13 +49,13 @@ export function FormComponentMixinFactory(mixinOptions) {
         },
         methods: {
             cancelEdit() {
-                // Do nothing, will fall back to $store object through the "currentItem"
+                // Do nothing, will fall back to $store object through the "currentXXXItem"
                 this[localObjectVariable] = null;
             },
             enterEdit() {
                 this[localObjectVariable] = Object.assign(
                     {},
-                    this.currentItem,
+                    this['current' + uniqueName + 'Item'],
                     {
                         IsDirty: true
                     }
