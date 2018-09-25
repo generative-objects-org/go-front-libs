@@ -158,70 +158,109 @@ describe('Vuex ORM applyFilter plugin tests', function() {
         }.should.throw('Operator xx is not valid for group'));
     });
 
-    // it('should apply 2 group filters', function() {
-    //     const results = store.getters['entities/users/query']()
-    //         .applyFilter({
-    //             operator: '||',
-    //             conditions: [
-    //                 {
-    //                     operator: '&&',
-    //                     conditions: [
-    //                         {
-    //                             left: { value: 'id' },
-    //                             operator: '==',
-    //                             right: { value: 1 },
-    //                             order: 1
-    //                         },
-    //                         {
-    //                             left: { value: 'phone' },
-    //                             operator: '==',
-    //                             right: { value: '(555) 281-4567' },
-    //                             order: 2
-    //                         }
-    //                     ],
-    //                     order: 1
-    //                 },
-    //                 {
-    //                     operator: '&&',
-    //                     conditions: [
-    //                         {
-    //                             left: { value: 'email' },
-    //                             operator: 'StartsWith',
-    //                             right: { value: 'peach' },
-    //                             order: 1
-    //                         },
-    //                         {
-    //                             left: { value: 'id' },
-    //                             operator: '==',
-    //                             right: { value: 3 },
-    //                             order: 2
-    //                         }
-    //                     ],
-    //                     order: 2
-    //                 }
-    //             ]
-    //         })
-    //         .get();
-    //     results.should.have.length(2);
-    //     results
-    //         .map(elt => {
-    //             return elt.id;
-    //         })
-    //         .should.eql([1, 3]);
-    // });
-    // it('should apply 2 groups filter', function() {
-    //     debugger;
-    //     const results = store.getters['entities/users/query']()
-    //         .where((_record, q) => {
-    //             q.where('id', 1).orWhere('name', 'John Walker');
-    //         })
-    //         .where((_record, q) => {
-    //             q.where('id', 3).Orhere('email', 'peach@gmail.com');
-    //         })
-    //         .get();
+    it('should apply 2 nested group filters, separated with OR', function() {
+        const results = store.getters['entities/users/query']()
+            .applyFilter({
+                operator: '||',
+                conditions: [
+                    {
+                        operator: '&&',
+                        conditions: [
+                            {
+                                left: { value: 'id' },
+                                operator: '==',
+                                right: { value: 1 },
+                                order: 1
+                            },
+                            {
+                                left: { value: 'phone' },
+                                operator: '==',
+                                right: { value: '(555) 281-4567' },
+                                order: 2
+                            }
+                        ],
+                        order: 1
+                    },
+                    {
+                        operator: '&&',
+                        conditions: [
+                            {
+                                left: { value: 'email' },
+                                operator: 'StartsWith',
+                                right: { value: 'peach' },
+                                order: 1
+                            },
+                            {
+                                left: { value: 'id' },
+                                operator: '==',
+                                right: { value: 3 },
+                                order: 2
+                            }
+                        ],
+                        order: 2
+                    }
+                ]
+            })
+            .get();
+        results.should.have.length(2);
+        results
+            .map(elt => {
+                return elt.id;
+            })
+            .should.eql([1, 3]);
+    });
 
-    //     results.should.have.length(2);
-    // });
+    it('should apply 2 nested group filters, separated with AND', function() {
+        const results = store.getters['entities/users/query']()
+            .applyFilter({
+                operator: '&&',
+                conditions: [
+                    {
+                        operator: '||',
+                        conditions: [
+                            {
+                                left: { value: 'id' },
+                                operator: '==',
+                                right: { value: 1 },
+                                order: 1
+                            },
+                            {
+                                left: { value: 'phone' },
+                                operator: '==',
+                                right: { value: '(555) 281-4567' },
+                                order: 2
+                            }
+                        ],
+                        order: 1
+                    },
+                    {
+                        operator: '||',
+                        conditions: [
+                            {
+                                left: { value: 'email' },
+                                operator: 'StartsWith',
+                                right: { value: 'peach' },
+                                order: 1
+                            },
+                            {
+                                left: { value: 'id' },
+                                operator: '==',
+                                right: { value: 3 },
+                                order: 2
+                            }
+                        ],
+                        order: 2
+                    }
+                ]
+            })
+            .get();
+        results.should.have.length(2);
+        results
+            .map(elt => {
+                return elt.id;
+            })
+            .should.eql([1, 3]);
+    });
 });
 
 function initData() {

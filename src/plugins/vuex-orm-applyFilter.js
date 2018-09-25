@@ -35,7 +35,6 @@ function applyPredicateToVuexORMQuery(pred, parentBooleanOperator = null) {
     let booleanOperator = pred.operator;
 
     if (isConditionGroup(pred)) {
-        debugger;
         let len = pred.conditions.length;
 
         if (len === 0) return query;
@@ -46,26 +45,26 @@ function applyPredicateToVuexORMQuery(pred, parentBooleanOperator = null) {
 
         if (booleanOperator === '||') {
             pred.conditions.forEach(cond => {
-                // query.orWhere((_record, q) => {
-                applyPredicateToVuexORMQuery.call(
-                    query,
-                    cond,
-                    pred.operator,
-                    false
-                );
-                // });
+                query.orWhere((_record, q) => {
+                    applyPredicateToVuexORMQuery.call(
+                        q,
+                        cond,
+                        pred.operator,
+                        false
+                    );
+                });
             });
         } else if (booleanOperator === '&&') {
-            // query.where((_record, q) => {
-            pred.conditions.forEach(cond => {
-                applyPredicateToVuexORMQuery.call(
-                    query,
-                    cond,
-                    pred.operator,
-                    false
-                );
+            query.where((_record, q) => {
+                pred.conditions.forEach(cond => {
+                    applyPredicateToVuexORMQuery.call(
+                        q,
+                        cond,
+                        pred.operator,
+                        false
+                    );
+                });
             });
-            // });
         } else
             throw new Error(
                 `Operator ${booleanOperator} is not valid for group`
