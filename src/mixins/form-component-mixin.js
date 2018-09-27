@@ -4,11 +4,11 @@ export const MODES = {
 };
 
 export const FORM_ACTIONS = {
-    CANCEL: 'cancelEdit',
-    CREATE_NEW: 'createNew',
-    DELETE: 'delete',
+    CANCEL_EDIT: 'cancelEdit',
+    CREATE_ITEM: 'createNew',
+    DELETE_ITEM: 'delete',
     ENTER_EDIT: 'enterEdit',
-    SAVE: 'save'
+    SAVE_ITEM: 'save'
 };
 
 export function FormComponentMixinFactory(mixinOptions) {
@@ -62,13 +62,20 @@ export function FormComponentMixinFactory(mixinOptions) {
                 );
             },
             ['create' + uniqueName]() {
-                this[localObjectVariable] = modelReference.createNew();
+                this[localObjectVariable] = Object.assign(
+                    new modelReference(),
+                    {
+                        IsDirty: true,
+                        IsNew: true
+                    }
+                );
             },
             ['delete' + uniqueName]() {
                 // Do something to prompt for Delete
             },
             ['save' + uniqueName]() {
                 if (this[localObjectVariable] != null) {
+                    // Add or update local $store
                     if (this[localObjectVariable].IsNew) {
                         this.$store.dispatch(
                             'entities/' + toLowerEntityName + '/insert',
@@ -82,6 +89,8 @@ export function FormComponentMixinFactory(mixinOptions) {
                             this[localObjectVariable]
                         );
                     }
+
+                    // Persist to DB
                     this.$store
                         .dispatch('crud/saveAll', {
                             entityName: toLowerEntityName
@@ -89,7 +98,10 @@ export function FormComponentMixinFactory(mixinOptions) {
                         .then(() => {
                             this['load' + uniqueName](
                                 this[localObjectVariable].Id
-                            ).then((this[localObjectVariable] = null));
+                            ).then(data => {
+                                this[localObjectVariable] = null;
+                                this.Id = data.Id;
+                            });
                         });
                 }
             }
