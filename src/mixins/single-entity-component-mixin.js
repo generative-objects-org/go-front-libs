@@ -27,7 +27,7 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
             }
         },
         created: function() {
-            if (!!this.id) {
+            if (!!this.id && this.id !== 'create') {
                 this['load' + uniqueName](this.id);
             }
         },
