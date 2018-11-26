@@ -18,6 +18,9 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
         },
         computed: {
             ['current' + uniqueName + 'Collection']: function() {
+                if (this.externalFilter === null) {
+                    return [];
+                }
                 let query = this.$store.getters[
                     'entities/' + toLowerEntityName + '/query'
                 ]();
@@ -35,6 +38,10 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
         },
         methods: {
             ['load' + uniqueName + 'Collection']: function() {
+                if (this.externalFilter === null) {
+                    return;
+                }
+
                 this['isLoading' + uniqueName + 'Collection'] = true;
 
                 let configuration = {};
@@ -63,7 +70,7 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
         },
         watch: {
             externalFilter(newFilter, oldFilter) {
-                this['load' + uniqueName + 'Collection']();
+                if (newFilter) this['load' + uniqueName + 'Collection']();
             }
         }
     };
