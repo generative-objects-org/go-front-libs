@@ -43,19 +43,15 @@ export function predicateToString(pred) {
 
         let result = '(';
         let op = pred.operator;
-        pred.conditions
-            .sort((a, b) => {
-                return a.order > b.order ? 1 : a.order < b.order ? -1 : 0;
-            })
-            .forEach((cond, idx) => {
-                let condToString = predicateToString(cond);
-                if (condToString !== '') {
-                    result += condToString;
-                    if (idx < len - 1) {
-                        result += ` ${op} `;
-                    }
+        pred.conditions.sort(conditionListSort).forEach((cond, idx) => {
+            let condToString = predicateToString(cond);
+            if (condToString !== '') {
+                result += condToString;
+                if (idx < len - 1) {
+                    result += ` ${op} `;
                 }
-            });
+            }
+        });
         result += ')';
         return result;
     } else if (isCondition(pred)) {
@@ -94,4 +90,19 @@ export function isConditionGroup(pred) {
 
 export function isCondition(pred) {
     return pred.hasOwnProperty('left') && pred.hasOwnProperty('right');
+}
+
+/// To compare 2 predicates, we actually compare their string representation
+/// as it is the one which interests us in most cases.
+export function comparePredicates(predA, predB) {
+    if (
+        (isCondition(predA) && isCondition(predB)) ||
+        (isConditionGroup(predA) && isConditionGroup(predB))
+    )
+        return predicateToString(predA) === predicateToString(predB);
+    return false;
+}
+
+function conditionListSort(a, b) {
+    return a.order > b.order ? 1 : a.order < b.order ? -1 : 0;
 }

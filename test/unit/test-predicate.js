@@ -1,4 +1,7 @@
-import { predicateToString } from '../../src/libs/go-predicate-model';
+import {
+    predicateToString,
+    comparePredicates
+} from '../../src/libs/go-predicate-model';
 import 'chai/register-should';
 
 describe('GO Predicate', function() {
@@ -206,6 +209,136 @@ describe('GO Predicate', function() {
                     conditions: conditionListBinaryOperators
                 });
             }.should.throw('Operator xx is not valid for group'));
+        });
+    });
+
+    describe('comparePredicates', function() {
+        it('should fail when not condition', function() {
+            let predA = {};
+            comparePredicates(predA, predA).should.equal(false);
+        });
+
+        it('should compare predicate to itself -- Condition', function() {
+            let predA = {
+                left: { value: 'Id', needsQuote: false },
+                operator: '==',
+                right: { value: 2 }
+            };
+
+            comparePredicates(predA, predA).should.equal(true);
+        });
+
+        it('should compare predicate to itself -- ConditionGroup', function() {
+            let predA = {
+                conditions: [
+                    {
+                        left: {
+                            value: 'Test'
+                        },
+                        operator: '!=',
+                        right: {
+                            value: '1'
+                        },
+                        order: 1,
+                        result: 'Test != 1'
+                    }
+                ],
+                operator: '||'
+            };
+
+            comparePredicates(predA, predA).should.equal(true);
+        });
+
+        let predA = {
+            left: { value: 'Id', needsQuote: false },
+            operator: '==',
+            right: { value: 2 }
+        };
+
+        let predB = {
+            left: { value: 'Id', needsQuote: false },
+            operator: '==',
+            right: { value: 2 }
+        };
+
+        let predC = {
+            left: { value: 'CustomerId', needsQuote: false },
+            operator: '==',
+            right: { value: 2 }
+        };
+
+        let predD = {
+            left: { value: 'Id', needsQuote: false },
+            operator: '==',
+            right: { value: 2, needsQuote: false }
+        };
+
+        it('should compare 2 equal predicates -- Condition', function() {
+            comparePredicates(predA, predB).should.equal(true);
+        });
+
+        it('should compare 2 different predicates -- Condition', function() {
+            comparePredicates(predA, predC).should.equal(false);
+        });
+
+        it('should compare 2 almost equal predicates -- Condition', function() {
+            comparePredicates(predA, predD).should.equal(true);
+        });
+
+        let groupA = {
+            conditions: [
+                Object.assign({ order: 1 }, predA),
+                Object.assign({ order: 2 }, predC)
+            ],
+            operator: '&&'
+        };
+
+        let groupB = {
+            conditions: [
+                Object.assign({ order: 1 }, predA),
+                Object.assign({ order: 2 }, predC)
+            ],
+            operator: '&&'
+        };
+
+        let groupC = {
+            conditions: [
+                Object.assign({ order: 1 }, predA),
+                Object.assign({ order: 2 }, predC)
+            ],
+            operator: '||'
+        };
+
+        let groupD = {
+            conditions: [
+                Object.assign({ order: 2 }, predA),
+                Object.assign({ order: 1 }, predC)
+            ],
+            operator: '&&'
+        };
+
+        let groupE = {
+            conditions: [
+                Object.assign({ order: 2 }, predC),
+                Object.assign({ order: 1 }, predA)
+            ],
+            operator: '&&'
+        };
+
+        it('should compare 2 equal predicates -- ConditionGroup', function() {
+            comparePredicates(groupA, groupB).should.equal(true);
+        });
+
+        it('should compare 2 equal predicates -- ConditionGroup -- Reorder', function() {
+            comparePredicates(groupA, groupE).should.equal(true);
+        });
+
+        it('should compare 2 different predicates -- ConditionGroup -- Operator', function() {
+            comparePredicates(groupA, groupC).should.equal(false);
+        });
+
+        it('should compare 2 different predicates -- ConditionGroup -- Order', function() {
+            comparePredicates(groupA, groupD).should.equal(false);
         });
     });
 });
