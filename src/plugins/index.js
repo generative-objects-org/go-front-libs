@@ -1,5 +1,5 @@
 import { applyPredicateToVuexORMQuery } from './vuex-orm-applyFilter';
-import { cleanInstanceMethod } from './vuex-orm-cleanInstance';
+import { getCleanInstanceMethod } from './vuex-orm-cleanInstance';
 
 const plugin = {
     install(components, options) {
@@ -23,7 +23,9 @@ function installApplyFilterPlugin(components, options) {
  * any field named after a relation in the entityRelations array
  */
 function installCleanInstancePlugin(components, options) {
-    components.Model.prototype.cleanInstanceRelations = cleanInstanceMethod;
+    components.Model.prototype.cleanInstanceRelations = getCleanInstanceMethod(
+        components.Relation
+    );
 }
 
 export default plugin;
