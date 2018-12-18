@@ -94,7 +94,7 @@ export function isCondition(pred) {
 
 /// To compare 2 predicates, we actually compare their string representation
 /// as it is the one which interests us in most cases.
-export function comparePredicates(predA, predB) {
+export function arePredicatesEqual(predA, predB) {
     if (
         (isCondition(predA) && isCondition(predB)) ||
         (isConditionGroup(predA) && isConditionGroup(predB))

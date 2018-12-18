@@ -1,6 +1,6 @@
 import {
     predicateToString,
-    comparePredicates
+    arePredicatesEqual
 } from '../../src/libs/go-predicate-model';
 import 'chai/register-should';
 
@@ -212,10 +212,10 @@ describe('GO Predicate', function() {
         });
     });
 
-    describe('comparePredicates', function() {
+    describe('arePredicatesEqual', function() {
         it('should fail when not condition', function() {
             let predA = {};
-            comparePredicates(predA, predA).should.equal(false);
+            arePredicatesEqual(predA, predA).should.equal(false);
         });
 
         it('should compare predicate to itself -- Condition', function() {
@@ -225,7 +225,7 @@ describe('GO Predicate', function() {
                 right: { value: 2 }
             };
 
-            comparePredicates(predA, predA).should.equal(true);
+            arePredicatesEqual(predA, predA).should.equal(true);
         });
 
         it('should compare predicate to itself -- ConditionGroup', function() {
@@ -246,7 +246,7 @@ describe('GO Predicate', function() {
                 operator: '||'
             };
 
-            comparePredicates(predA, predA).should.equal(true);
+            arePredicatesEqual(predA, predA).should.equal(true);
         });
 
         let predA = {
@@ -274,15 +274,15 @@ describe('GO Predicate', function() {
         };
 
         it('should compare 2 equal predicates -- Condition', function() {
-            comparePredicates(predA, predB).should.equal(true);
+            arePredicatesEqual(predA, predB).should.equal(true);
         });
 
         it('should compare 2 different predicates -- Condition', function() {
-            comparePredicates(predA, predC).should.equal(false);
+            arePredicatesEqual(predA, predC).should.equal(false);
         });
 
         it('should compare 2 almost equal predicates -- Condition', function() {
-            comparePredicates(predA, predD).should.equal(true);
+            arePredicatesEqual(predA, predD).should.equal(true);
         });
 
         let groupA = {
@@ -326,19 +326,19 @@ describe('GO Predicate', function() {
         };
 
         it('should compare 2 equal predicates -- ConditionGroup', function() {
-            comparePredicates(groupA, groupB).should.equal(true);
+            arePredicatesEqual(groupA, groupB).should.equal(true);
         });
 
         it('should compare 2 equal predicates -- ConditionGroup -- Reorder', function() {
-            comparePredicates(groupA, groupE).should.equal(true);
+            arePredicatesEqual(groupA, groupE).should.equal(true);
         });
 
         it('should compare 2 different predicates -- ConditionGroup -- Operator', function() {
-            comparePredicates(groupA, groupC).should.equal(false);
+            arePredicatesEqual(groupA, groupC).should.equal(false);
         });
 
         it('should compare 2 different predicates -- ConditionGroup -- Order', function() {
-            comparePredicates(groupA, groupD).should.equal(false);
+            arePredicatesEqual(groupA, groupD).should.equal(false);
         });
     });
 });
