@@ -2,7 +2,7 @@
 
 This folder contains the different plugins used in GO generated apps.
 
-## Vuex ORM ApplyFilter plugins
+## Vuex ORM ApplyFilter plugin
 
 This plugins extends the [Vuex ORM](https://vuex-orm.github.io/vuex-orm) library (an ORM for Vuex store library), adding a `.applyFilter(predicate)` methods to Query object, in order to make it understand GO-style filter predicate (see [GO Predicate Model](../libs/GOPredicateModel.md)).
 
@@ -28,5 +28,8 @@ const user = store.getters['entities/users/query']().applyFilter({
 
 Note: the `applyFilter` version is clearly more verbose than the original Vuex ORM one, but its use is mostly indented to convert generated Condition & ConditionGroup into the Vuex ORM Query language. If one needs to write custom code using directly the Vuex ORM library, s/he can use the [Query builder syntax](https://vuex-orm.github.io/vuex-orm/guide/store/retrieving-data.html#query-builder) to do so.
 
-> ⚠️ Currently, this plugin doesn't work well with nested ConditionGroup (ie groups of the form `(A && B) || (C && D)`) due to a bug in the original library. It works for simple conditions & one-level condition groups.
+## Vuex ORM CleanInstanceRelations plugin
 
+This plugin adds a `Model` method on all [Vuex ORM](https://vuex-orm.github.io/vuex-orm) entities named `cleanInstanceRelations`. This method can be called on any instance and will delete (using JS [delete](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete)) the instance fields which are of type _Relation_.
+
+It is used before sending data to the server, as the data is sent through a dataset where each entity is in its own dataset.

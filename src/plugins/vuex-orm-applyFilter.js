@@ -30,7 +30,10 @@ const operatorToComparisonMethod = {
     }
 };
 
-function applyPredicateToVuexORMQuery(pred, parentBooleanOperator = null) {
+export function applyPredicateToVuexORMQuery(
+    pred,
+    parentBooleanOperator = null
+) {
     let query = this;
     let booleanOperator = pred.operator;
 
@@ -102,32 +105,3 @@ function applyFilterToSimpleCondition(
     }
     return query;
 }
-
-// export function searchEntitiesToIncludeFromPredicate(currentPredicate) {
-//     let toReturn = [];
-//     if (isConditionGroup(currentPredicate)) {
-//         currentPredicate.conditions.forEach(cond => {
-//             toReturn.concat(searchEntitiesToInclude(cond));
-//         });
-//     } else if (isCondition(currentPredicate)) {
-//         let i = currentPredicate.left.value.lastIndexOf('.');
-//         if (i > -1) {
-//             return [currentPredicate.left.value.substring(0, i)];
-//         }
-//         return [];
-//     }
-// }
-
-/**
- * This plugins adds a applyFilter method to the Vuex ORM library's Query object
- * This method can be used to apply any GOPredicate style Condition or ConditionGroup
- * to a Vuex ORM Query.
- */
-
-const plugin = {
-    install(components, options) {
-        components.Query.prototype.applyFilter = applyPredicateToVuexORMQuery;
-    }
-};
-
-export default plugin;

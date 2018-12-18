@@ -1,7 +1,7 @@
 import { store } from '../dev/vuex-orm';
 import VuexORM from '@vuex-orm/core';
-import VuexORMApplyFilterPlugin from '../../src/plugins/vuex-orm-applyFilter';
-import 'chai/register-should';
+import VuexORMApplyFilterPlugin from '../../src/plugins';
+import { should } from 'chai';
 
 describe('Vuex ORM applyFilter plugin tests', function() {
     it('can initialize store', function() {

@@ -2,7 +2,7 @@ import * as uuid from './libs/go-uuid';
 import * as apiAdapter from './libs/go-api-adapter';
 import * as predicateModel from './libs/go-predicate-model';
 
-import ormPlugin from './plugins/vuex-orm-applyFilter';
+import ormPlugin from './plugins';
 
 import * as formMixin from './mixins/form-component-mixin';
 import * as multipleEntitiesMixin from './mixins/multiple-entities-component-mixin';
