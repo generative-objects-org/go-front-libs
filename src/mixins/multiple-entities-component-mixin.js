@@ -1,4 +1,7 @@
-import { predicateToString } from '../libs/go-predicate-model';
+import {
+    arePredicatesEqual,
+    predicateToString
+} from '../libs/go-predicate-model';
 
 export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
     let { entityName, includes, internalName } = mixinOptions;
@@ -12,12 +15,16 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
     let uniqueName = internalName || entityName;
 
     return {
-        props: { externalFilter: Object },
+        props: {
+            externalFilter: Object, // Optional filter for current collection load
+            dataCollection: Array // In-memory array of element
+        },
         data() {
             return { ['isLoading' + uniqueName + 'Collection']: false };
         },
         computed: {
             ['current' + uniqueName + 'Collection']: function() {
+                if (this.dataCollection) return this.dataCollection;
                 if (this.externalFilter === null) {
                     return [];
                 }
@@ -37,7 +44,7 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
             this['load' + uniqueName + 'Collection']();
         },
         methods: {
-            ['load' + uniqueName + 'Collection']: function() {
+            async ['load' + uniqueName + 'Collection']() {
                 if (this.externalFilter === null) {
                     return;
                 }
@@ -53,24 +60,26 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
                         this.externalFilter
                     );
                 }
-
-                return this.$store
-                    .dispatch('crud/getCollection', {
-                        entityName: toLowerEntityName,
-                        configuration: configuration
-                    })
-                    .then(dataCollection => {
-                        this['isLoading' + uniqueName + 'Collection'] = false;
-                    })
-                    .catch(err => {
-                        this['isLoading' + uniqueName + 'Collection'] = false;
-                        console.warn(err);
-                    });
+                try {
+                    let dataCollection = await this.$store.dispatch(
+                        'crud/getCollection',
+                        {
+                            entityName: toLowerEntityName,
+                            configuration: configuration
+                        }
+                    );
+                    this['isLoading' + uniqueName + 'Collection'] = false;
+                    return dataCollection;
+                } catch (err) {
+                    this['isLoading' + uniqueName + 'Collection'] = false;
+                    throw err;
+                }
             }
         },
         watch: {
             externalFilter(newFilter, oldFilter) {
-                if (newFilter) this['load' + uniqueName + 'Collection']();
+                if (newFilter && !arePredicatesEqual(oldFilter, newFilter))
+                    this['load' + uniqueName + 'Collection']();
             }
         }
     };

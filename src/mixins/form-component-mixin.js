@@ -12,7 +12,7 @@ export const FORM_ACTIONS = {
 };
 
 export function FormComponentMixinFactory(mixinOptions) {
-    let { modelReference, entityName, internalName } = mixinOptions;
+    let { modelReference, entityName, internalName, includes } = mixinOptions;
 
     if (!entityName)
         throw new Error(
@@ -24,26 +24,33 @@ export function FormComponentMixinFactory(mixinOptions) {
     let localObjectVariable = 'local' + uniqueName + 'Object';
 
     return {
+        props: { viewMode: String },
         data: function() {
             return {
                 [localObjectVariable]: null,
-                initialViewMode: MODES.VIEW_MODE,
-                FORM_ACTIONS: FORM_ACTIONS
+                FORM_ACTIONS: FORM_ACTIONS,
+                currentViewMode: MODES.VIEW_MODE
             }; // exposing FORM_ACTIONS for binding to Mixin-defined actions
         },
         computed: {
             // This will overwrite the existing "currentItem" computed added by SingleEntityComponentMixin
             ['current' + uniqueName + 'Item']: function() {
+                if (this.item) return this.item;
                 if (this[localObjectVariable] !== null)
                     return this[localObjectVariable];
                 else return this.storeObject;
+            },
+            IsViewMode() {
+                return this.viewMode
+                    ? this.viewMode === MODES.VIEW_MODE
+                    : this.currentViewMode == MODES.VIEW_MODE;
             }
         },
         created: function() {
             if (!!this.id) {
                 if (this.id === 'create') {
                     this['create' + uniqueName]();
-                    this.initialViewMode = MODES.EDIT_MODE;
+                    this.currentViewMode = MODES.EDIT_MODE;
                 }
             }
         },
@@ -51,58 +58,56 @@ export function FormComponentMixinFactory(mixinOptions) {
             cancelEdit() {
                 // Do nothing, will fall back to $store object through the "currentXXXItem"
                 this[localObjectVariable] = null;
+                this.currentViewMode = MODES.VIEW_MODE;
             },
             enterEdit() {
-                this[localObjectVariable] = Object.assign(
-                    {},
-                    this['current' + uniqueName + 'Item'],
-                    {
-                        IsDirty: true
-                    }
+                // Cloning main entity
+                this[localObjectVariable] = JSON.parse(
+                    JSON.stringify(
+                        Object.assign({}, this['current' + uniqueName + 'Item'])
+                    )
                 );
+                this.currentViewMode = MODES.EDIT_MODE;
             },
             ['create' + uniqueName]() {
-                this[localObjectVariable] = Object.assign(
-                    new modelReference(),
-                    {
-                        IsDirty: true,
-                        IsNew: true
+                this[localObjectVariable] = modelReference.createNew();
+                this.currentViewMode = MODES.EDIT_MODE;
+            },
+            async ['delete' + uniqueName]() {
+                if (this.id) {
+                    if (
+                        window.confirm(
+                            'Are you sure you want to delete this entity?'
+                        )
+                    ) {
+                        await this.$store.dispatch('crud/delete', {
+                            entityName: toLowerEntityName,
+                            pks: [this.id]
+                        });
                     }
-                );
+                }
             },
-            ['delete' + uniqueName]() {
-                // Do something to prompt for Delete
-            },
-            ['save' + uniqueName]() {
+            async ['save' + uniqueName]() {
                 if (this[localObjectVariable] != null) {
-                    // Add or update local $store
-                    if (this[localObjectVariable].IsNew) {
-                        this.$store.dispatch(
-                            'entities/' + toLowerEntityName + '/insert',
-                            {
-                                data: this[localObjectVariable]
-                            }
-                        );
-                    } else {
-                        this.$store.dispatch(
-                            'entities/' + toLowerEntityName + '/update',
-                            this[localObjectVariable]
-                        );
-                    }
+                    await this.$store.dispatch(
+                        'entities/' + toLowerEntityName + '/insertOrUpdate',
+                        {
+                            data: this[localObjectVariable]
+                        }
+                    );
 
                     // Persist to DB
-                    this.$store
-                        .dispatch('crud/saveAll', {
-                            entityName: toLowerEntityName
-                        })
-                        .then(() => {
-                            this['load' + uniqueName](
-                                this[localObjectVariable].Id
-                            ).then(data => {
-                                this[localObjectVariable] = null;
-                                this.Id = data.Id;
-                            });
-                        });
+                    await this.$store.dispatch('crud/saveAll', {
+                        entityName: toLowerEntityName
+                    });
+
+                    // Refetch
+                    let entity = await this['load' + uniqueName](
+                        this[localObjectVariable].Id
+                    );
+                    this[localObjectVariable] = null;
+                    this.Id = entity.Id;
+                    this.currentViewMode = MODES.VIEW_MODE;
                 }
             }
         }
