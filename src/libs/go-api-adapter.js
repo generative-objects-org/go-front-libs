@@ -26,18 +26,42 @@
         }
     }
 */
-export function buildPrimaryKey(entity, ...keyNames) {
-    var primaryKey;
 
-    if (!entity || typeof entity != 'object')
-        throw new Error(
-            'buildPrimaryKey takes an entity object as first parameter'
-        );
+/**
+ * Builds a GO-compatible dataset from the provided list of entities
+ * @param {Array} entities Array of { name: String, data: Object, pkFields: Array }
+ */
+export function buildDataset(entities) {
+    // Prepare Dataset
+    let dataset = createEmptyDataset();
 
-    if (keyNames.length == 0)
-        throw new Error(
-            'buildPrimaryKey takes at least one key name as second parameter'
-        );
+    if (entities && entities.length > 0) {
+        let pkFields = entities[0].pkFields;
+
+        if (!pkFields || pkFields.length == 0)
+            throw new Error(
+                'You must specify the PK field(s) for the first entity'
+            );
+
+        // Creating the dataset inline
+        entities.forEach((elt, i) => {
+            if (!elt.name)
+                throw new Error(
+                    'You must specify the Entity Name for each entity'
+                );
+            addEntitiesToDataset(elt.name, [elt.data], dataset);
+        });
+
+        // Set primary key accordingly
+        dataset.PrimaryKey = buildPrimaryKey(entities[0].data, pkFields);
+    }
+
+    delete dataset.lastInternalObjectId;
+    return dataset;
+}
+
+function buildPrimaryKey(entity, keyNames) {
+    let primaryKey;
 
     if (keyNames.length == 1) {
         primaryKey = entity[keyNames];
@@ -50,46 +74,17 @@ export function buildPrimaryKey(entity, ...keyNames) {
     return primaryKey;
 }
 
-export function createEmptyDataset() {
+function createEmptyDataset() {
     return {
-        InternalObjectId: 0,
+        InternalObjectId: 1,
         ObjectsDataSet: {
             $type: 'ObjectsDataSet'
         }
     };
 }
 
-export function buildDataset(resourceName, entities, ...pkFields) {
-    // Prepare Dataset
-    let dataset = createEmptyDataset();
-
-    if (entities && entities.length > 0) {
-        if (!pkFields || pkFields.length == 0)
-            throw new Error(
-                'You must specify the PK field(s) for the main entity'
-            );
-
-        // Prepare Primary Key
-        dataset.PrimaryKey = buildPrimaryKey(entities[0], pkFields);
-
-        // Creating the dataset inline
-        // Only works for Update & Delete, not Create
-        addEntitiesToDataset(resourceName, entities, dataset);
-    }
-
-    return dataset;
-}
-
-export function addEntitiesToDataset(resourceName, entities, dataset) {
-    if (!resourceName)
-        throw new Error(
-            'You must specify the resourceName to use for this dataset ("main entity")'
-        );
-
-    if (!dataset)
-        throw new Error('You must specify the dataset to add entities to');
-
-    let lastInternalObjectId = dataset.InternalObjectId;
+function addEntitiesToDataset(resourceName, entities, dataset) {
+    let lastInternalObjectId = dataset.lastInternalObjectId || 0;
     let currentLastObjectId = lastInternalObjectId;
 
     if (!(resourceName + 'ObjectsDataSet' in dataset.ObjectsDataSet)) {
@@ -106,7 +101,7 @@ export function addEntitiesToDataset(resourceName, entities, dataset) {
         currentLastObjectId = i + lastInternalObjectId + 1;
     });
 
-    dataset.InternalObjectId = currentLastObjectId;
+    dataset.lastInternalObjectId = currentLastObjectId;
     return dataset;
 }
 
