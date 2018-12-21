@@ -24,7 +24,7 @@ export function FormComponentMixinFactory(mixinOptions) {
     let localObjectVariable = 'local' + uniqueName + 'Object';
 
     return {
-        props: { viewMode: Boolean },
+        props: { currentMode: String },
         data: function() {
             return {
                 [localObjectVariable]: null,
@@ -41,7 +41,9 @@ export function FormComponentMixinFactory(mixinOptions) {
                 else return this.storeObject;
             },
             IsViewMode() {
-                return this.viewMode || this.currentViewMode == MODES.VIEW_MODE;
+                return this.currentMode
+                    ? this.currentMode === MODES.VIEW_MODE
+                    : this.currentViewMode == MODES.VIEW_MODE;
             }
         },
         created: function() {
