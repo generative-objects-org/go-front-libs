@@ -27,6 +27,7 @@
         "webpack-cli": "^3.0.8"
     },
     "dependencies": {
+        "lodash-es": "^4.17.11",
         "mersennetwister": "^0.2.3"
     },
     "scripts": {
