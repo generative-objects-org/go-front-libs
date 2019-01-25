@@ -1,5 +1,10 @@
 export function SingleEntityComponentMixinFactory(mixinOptions) {
-    let { entityName, includes, internalName } = mixinOptions;
+    let {
+        modelReference,
+        entityName,
+        includes,
+        internalName
+    } = mixinOptions;
 
     if (!entityName)
         throw new Error(
@@ -14,7 +19,7 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
             id: String, // Used to load entity
             item: Object // In memory entity
         },
-        data: function() {
+        data: function () {
             return {
                 ['isLoading' + uniqueName + 'Item']: false
             };
@@ -23,9 +28,13 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
             // Currently displayed entity
             // If exists, in-memory entity (this.item) has "priority"
             // over loaded one
-            ['current' + uniqueName + 'Item']: function() {
+            ['current' + uniqueName + 'Item']: function () {
                 if (this.item) return this.item;
-                else return this.storeObject;
+                else if (this.storeObject !== null)
+                    return this.storeObject;
+                else // Creating a dummy temporary instance, waiting for item to be set
+                    return modelReference.createNew(false);
+
             },
             // Entity computed from store, based on current id
             storeObject() {
@@ -43,7 +52,7 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
                 return null;
             }
         },
-        created: function() {
+        created: function () {
             // Initial load of entity
             if (
                 !!this.id &&

@@ -49,7 +49,10 @@ export function FormComponentMixinFactory(mixinOptions) {
                 if (this.item) return this.item;
                 if (this[localObjectVariable] !== null)
                     return this[localObjectVariable];
-                else return this.storeObject;
+                else if (this.storeObject !== null)
+                    return this.storeObject;
+                else // Creating a dummy temporary instance, waiting for item to be set
+                    return modelReference.createNew(false);
             },
             IsViewMode() {
                 return this.currentMode ?
@@ -73,7 +76,7 @@ export function FormComponentMixinFactory(mixinOptions) {
             },
             enterEdit() {
                 // Cloning main entity
-                this[localObjectVariable] = cloneDeep(this['current' + uniqueName + 'Item']);
+                this[localObjectVariable] = cloneDeep(this.storeObject);
                 this.currentViewMode = MODES.EDIT_MODE;
             },
             ['create' + uniqueName]() {
