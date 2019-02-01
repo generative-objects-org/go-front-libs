@@ -32,8 +32,7 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
                 if (this.item) return this.item;
                 else if (this.storeObject !== null)
                     return this.storeObject;
-                else // Creating a dummy temporary instance, waiting for item to be set
-                    return modelReference.createNew(false);
+                else return null;
 
             },
             // Entity computed from store, based on current id
