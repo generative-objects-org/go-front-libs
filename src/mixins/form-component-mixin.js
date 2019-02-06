@@ -1,4 +1,6 @@
-import { cloneDeep } from 'lodash-es';
+import {
+    cloneDeep
+} from 'lodash-es';
 
 export const MODES = {
     VIEW_MODE: 'VIEW_MODE',
@@ -14,7 +16,12 @@ export const FORM_ACTIONS = {
 };
 
 export function FormComponentMixinFactory(mixinOptions) {
-    let { modelReference, entityName, internalName, includes } = mixinOptions;
+    let {
+        modelReference,
+        entityName,
+        internalName,
+        includes
+    } = mixinOptions;
 
     if (!entityName)
         throw new Error(
@@ -29,7 +36,7 @@ export function FormComponentMixinFactory(mixinOptions) {
         props: {
             currentMode: String
         },
-        data: function() {
+        data: function () {
             return {
                 [localObjectVariable]: null,
                 FORM_ACTIONS: FORM_ACTIONS,
@@ -38,7 +45,7 @@ export function FormComponentMixinFactory(mixinOptions) {
         },
         computed: {
             // This will overwrite the existing "currentItem" computed added by SingleEntityComponentMixin
-            ['current' + uniqueName + 'Item']: function() {
+            ['current' + uniqueName + 'Item']: function () {
                 if (this.item) return this.item;
                 if (this[localObjectVariable] !== null)
                     return this[localObjectVariable];
@@ -46,12 +53,12 @@ export function FormComponentMixinFactory(mixinOptions) {
                 else return null;
             },
             IsViewMode() {
-                return this.currentMode
-                    ? this.currentMode === MODES.VIEW_MODE
-                    : this.currentViewMode == MODES.VIEW_MODE;
+                return this.currentMode ?
+                    this.currentMode === MODES.VIEW_MODE :
+                    this.currentViewMode == MODES.VIEW_MODE;
             }
         },
-        created: function() {
+        created: function () {
             if (!!this.id) {
                 if (this.id === 'create') {
                     this['create' + uniqueName]();
@@ -92,8 +99,7 @@ export function FormComponentMixinFactory(mixinOptions) {
             async ['save' + uniqueName]() {
                 if (this[localObjectVariable] != null) {
                     await this.$store.dispatch(
-                        'entities/' + toLowerEntityName + '/insertOrUpdate',
-                        {
+                        'entities/' + toLowerEntityName + '/insertOrUpdate', {
                             data: this[localObjectVariable]
                         }
                     );
@@ -108,7 +114,7 @@ export function FormComponentMixinFactory(mixinOptions) {
                         this[localObjectVariable].Id
                     );
                     this[localObjectVariable] = null;
-                    this.Id = entity.Id;
+                    this.id = entity.Id;
                     this.currentViewMode = MODES.VIEW_MODE;
                 }
             }
