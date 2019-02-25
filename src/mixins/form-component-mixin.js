@@ -1,7 +1,3 @@
-import {
-    cloneDeep
-} from 'lodash-es';
-
 export const MODES = {
     VIEW_MODE: 'VIEW_MODE',
     EDIT_MODE: 'EDIT_MODE'
@@ -19,8 +15,7 @@ export function FormComponentMixinFactory(mixinOptions) {
     let {
         modelReference,
         entityName,
-        internalName,
-        includes
+        internalName
     } = mixinOptions;
 
     if (!entityName)
@@ -30,7 +25,6 @@ export function FormComponentMixinFactory(mixinOptions) {
 
     let toLowerEntityName = entityName.toLowerCase();
     let uniqueName = internalName || entityName;
-    let localObjectVariable = 'local' + uniqueName + 'Object';
 
     return {
         props: {
@@ -38,20 +32,11 @@ export function FormComponentMixinFactory(mixinOptions) {
         },
         data: function () {
             return {
-                [localObjectVariable]: null,
                 FORM_ACTIONS: FORM_ACTIONS,
                 currentViewMode: MODES.VIEW_MODE
             }; // exposing FORM_ACTIONS for binding to Mixin-defined actions
         },
         computed: {
-            // This will overwrite the existing "currentItem" computed added by SingleEntityComponentMixin
-            ['current' + uniqueName + 'Item']: function () {
-                if (this.item) return this.item;
-                if (this[localObjectVariable] !== null)
-                    return this[localObjectVariable];
-                else if (this.storeObject !== null) return this.storeObject;
-                else return null;
-            },
             IsViewMode() {
                 return this.currentMode ?
                     this.currentMode === MODES.VIEW_MODE :
@@ -68,18 +53,15 @@ export function FormComponentMixinFactory(mixinOptions) {
         },
         methods: {
             cancelEdit() {
-                // Do nothing, will fall back to $store object through the "currentXXXItem"
-                this[localObjectVariable] = null;
                 this.currentViewMode = MODES.VIEW_MODE;
             },
             enterEdit() {
                 // Cloning main entity
-                this[localObjectVariable] = cloneDeep(this.storeObject);
                 this.currentViewMode = MODES.EDIT_MODE;
             },
             async ['create' + uniqueName]() {
                 let newEntity = await modelReference.createNew();
-                this[localObjectVariable] = newEntity;
+                this['local' + uniqueName + 'PK'] = newEntity.$id;
                 this.currentViewMode = MODES.EDIT_MODE;
             },
             async ['delete' + uniqueName]() {
@@ -91,30 +73,21 @@ export function FormComponentMixinFactory(mixinOptions) {
                     ) {
                         await this.$store.dispatch('crud/delete', {
                             entityName: toLowerEntityName,
-                            pks: [this.id]
+                            pks: [this['local' + uniqueName + 'PK']]
                         });
                     }
                 }
             },
             async ['save' + uniqueName]() {
-                if (this[localObjectVariable] != null) {
-                    await this.$store.dispatch(
-                        'entities/' + toLowerEntityName + '/insertOrUpdate', {
-                            data: this[localObjectVariable]
-                        }
-                    );
-
+                if (this['current' + uniqueName + 'Item'] != null) {
                     // Persist to DB
                     await this.$store.dispatch('crud/saveAll', {
                         entityName: toLowerEntityName
                     });
 
                     // Refetch
-                    let entity = await this['load' + uniqueName](
-                        this[localObjectVariable].Id
-                    );
-                    this[localObjectVariable] = null;
-                    this.id = entity.Id;
+                    await this['refetch' + uniqueName]();
+
                     this.currentViewMode = MODES.VIEW_MODE;
                 }
             }

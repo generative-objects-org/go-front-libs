@@ -21,6 +21,7 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
         },
         data: function () {
             return {
+                ['local' + uniqueName + 'PK']: null,
                 ['isLoading' + uniqueName + 'Item']: false
             };
         },
@@ -33,18 +34,22 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
                 else if (this.storeObject !== null)
                     return this.storeObject;
                 else return null;
-
+            },
+            ['current' + uniqueName + 'PK']: function () {
+                if (this['local' + uniqueName + 'PK'])
+                    return this['local' + uniqueName + 'PK'];
+                else return this.item;
             },
             // Entity computed from store, based on current id
             storeObject() {
-                if (this.id) {
+                if (this['current' + uniqueName + 'PK']) {
                     let query = this.$store.getters[
                         'entities/' + toLowerEntityName + '/query'
                     ]();
                     if (includes) {
                         query = query.with(includes);
                     }
-                    query.whereId(this.id);
+                    query.whereId(this['current' + uniqueName + 'PK']);
                     let toReturn = query.get();
                     return toReturn.length ? toReturn[0] : null;
                 }
@@ -57,6 +62,7 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
                 !!this.id &&
                 this.id !== 'create' // Create is dealt with in Form Mixin
             ) {
+                this['local' + uniqueName + 'PK'] = this.id;
                 this['load' + uniqueName](this.id);
             }
         },
@@ -78,11 +84,16 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
                         configuration: configuration
                     });
                     this['isLoading' + uniqueName + 'Item'] = false;
-                    this.id = entity.Id;
+                    this['local' + uniqueName + 'PK'] = pk;
                     return entity;
                 } catch (err) {
                     this['isLoading' + uniqueName + 'Item'] = false;
                     throw err;
+                }
+            },
+            async ['refetch' + uniqueName]() {
+                if (this['local' + uniqueName + 'PK']) {
+                    await this['load' + uniqueName](this.id);
                 }
             }
         }
