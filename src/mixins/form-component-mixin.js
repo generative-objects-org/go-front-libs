@@ -15,7 +15,8 @@ export function FormComponentMixinFactory(mixinOptions) {
     let {
         modelReference,
         entityName,
-        internalName
+        internalName,
+        pkName
     } = mixinOptions;
 
     if (!entityName)
@@ -86,7 +87,7 @@ export function FormComponentMixinFactory(mixinOptions) {
                     });
 
                     // Refetch
-                    await this['refetch' + uniqueName]();
+                    await this['refetch' + uniqueName + 'WithIdCheck']();
 
                     this.currentViewMode = MODES.VIEW_MODE;
                 }

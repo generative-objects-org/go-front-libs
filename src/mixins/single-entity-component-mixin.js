@@ -17,6 +17,7 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
     return {
         props: {
             id: String, // Used to load entity
+            routeName: String,
             item: Object // In memory entity
         },
         data: function () {
@@ -93,9 +94,25 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
             },
             async ['refetch' + uniqueName]() {
                 if (this['local' + uniqueName + 'PK']) {
-                    await this['load' + uniqueName](this.id);
+                    await this['load' + uniqueName](this['local' + uniqueName + 'PK']);
                 }
-            }
+            },
+            async ['refetch' + uniqueName + 'WithIdCheck']() {
+                // If this component has been loaded through a route (presence of routeName prop)
+                // and current PK is different from prop id
+                if (this.routeName && this['local' + uniqueName + 'PK'] && this['local' + uniqueName + 'PK'] !== this.id) {
+                    this.$router.push({
+                        name: this.routeName,
+                        params: {
+                            id: this['local' + uniqueName + 'PK']
+                        }
+                    })
+                    // Else, we simply refetch data (no need for a new entry in history)
+                } else {
+                    this['refetch' + uniqueName]();
+                }
+            },
+
         }
     };
 }
