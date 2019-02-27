@@ -1,3 +1,7 @@
+import {
+    newGuid
+} from '../libs/go-uuid';
+
 export const MODES = {
     VIEW_MODE: 'VIEW_MODE',
     EDIT_MODE: 'EDIT_MODE'
@@ -55,10 +59,14 @@ export function FormComponentMixinFactory(mixinOptions) {
         methods: {
             cancelEdit() {
                 this.currentViewMode = MODES.VIEW_MODE;
+                this.undo(_currentEditTagName);
+                _currentEditTagName = null;
             },
             enterEdit() {
                 // Cloning main entity
                 this.currentViewMode = MODES.EDIT_MODE;
+                _currentEditTagName = newGuid();
+                this.$store.commit('tagUndoMutation', _currentEditTagName);
             },
             async ['create' + uniqueName]() {
                 let newEntity = await modelReference.createNew();
