@@ -28,8 +28,9 @@ export function FormComponentMixinFactory(mixinOptions) {
             'Missing entityName option for FormComponentMixinFactory'
         );
 
-    let toLowerEntityName = entityName.toLowerCase();
-    let uniqueName = internalName || entityName;
+    let _toLowerEntityName = entityName.toLowerCase();
+    let _uniqueName = internalName || entityName;
+    let _currentEditTagName = null;
 
     return {
         props: {
@@ -51,7 +52,7 @@ export function FormComponentMixinFactory(mixinOptions) {
         created: function () {
             if (!!this.id) {
                 if (this.id === 'create') {
-                    this['create' + uniqueName]();
+                    this['create' + _uniqueName]();
                     this.currentViewMode = MODES.EDIT_MODE;
                 }
             }
@@ -68,12 +69,12 @@ export function FormComponentMixinFactory(mixinOptions) {
                 _currentEditTagName = newGuid();
                 this.$store.commit('tagUndoMutation', _currentEditTagName);
             },
-            async ['create' + uniqueName]() {
+            async ['create' + _uniqueName]() {
                 let newEntity = await modelReference.createNew();
-                this['local' + uniqueName + 'PK'] = newEntity.$id;
+                this['local' + _uniqueName + 'PK'] = newEntity.$id;
                 this.currentViewMode = MODES.EDIT_MODE;
             },
-            async ['delete' + uniqueName]() {
+            async ['delete' + _uniqueName]() {
                 if (this.id) {
                     if (
                         window.confirm(
@@ -81,21 +82,21 @@ export function FormComponentMixinFactory(mixinOptions) {
                         )
                     ) {
                         await this.$store.dispatch('crud/delete', {
-                            entityName: toLowerEntityName,
-                            pks: [this['local' + uniqueName + 'PK']]
+                            entityName: _toLowerEntityName,
+                            pks: [this['local' + _uniqueName + 'PK']]
                         });
                     }
                 }
             },
-            async ['save' + uniqueName]() {
-                if (this['current' + uniqueName + 'Item'] != null) {
+            async ['save' + _uniqueName]() {
+                if (this['current' + _uniqueName + 'Item'] != null) {
                     // Persist to DB
                     await this.$store.dispatch('crud/saveAll', {
-                        entityName: toLowerEntityName
+                        entityName: _toLowerEntityName
                     });
 
                     // Refetch
-                    await this['refetch' + uniqueName + 'WithIdCheck']();
+                    await this['refetch' + _uniqueName + 'WithIdCheck']();
 
                     this.currentViewMode = MODES.VIEW_MODE;
                 }
