@@ -1,4 +1,6 @@
-import { newGuid } from '../libs/go-uuid';
+import {
+    newGuid
+} from '../libs/go-uuid';
 
 export const MODES = {
     VIEW_MODE: 'VIEW_MODE',
@@ -14,7 +16,12 @@ export const FORM_ACTIONS = {
 };
 
 export function FormComponentMixinFactory(mixinOptions) {
-    let { modelReference, entityName, internalName, pkName } = mixinOptions;
+    let {
+        modelReference,
+        entityName,
+        internalName,
+        pkName
+    } = mixinOptions;
 
     if (!entityName)
         throw new Error(
@@ -29,7 +36,7 @@ export function FormComponentMixinFactory(mixinOptions) {
         props: {
             currentMode: String
         },
-        data: function() {
+        data: function () {
             return {
                 FORM_ACTIONS: FORM_ACTIONS,
                 currentViewMode: MODES.VIEW_MODE
@@ -37,12 +44,15 @@ export function FormComponentMixinFactory(mixinOptions) {
         },
         computed: {
             IsViewMode() {
-                return this.currentMode
-                    ? this.currentMode === MODES.VIEW_MODE
-                    : this.currentViewMode == MODES.VIEW_MODE;
+                return this.currentMode ?
+                    this.currentMode === MODES.VIEW_MODE :
+                    this.currentViewMode == MODES.VIEW_MODE;
+            },
+            computedViewMode() {
+                return this.currentMode || this.currentViewMode;
             }
         },
-        created: function() {
+        created: function () {
             if (!!this.id) {
                 if (this.id === 'create') {
                     this['create' + _uniqueName]();
@@ -51,7 +61,7 @@ export function FormComponentMixinFactory(mixinOptions) {
             }
         },
         // Making sure we don't leave unsaved changes
-        beforeDestroy: function() {
+        beforeDestroy: function () {
             if (!this.IsViewMode) {
                 this.cancelEdit();
             }
