@@ -14,6 +14,8 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
     let uniqueName = internalName || entityName;
     let toLowerEntityName = entityName.toLowerCase();
 
+    const includeWithQuery = includes ? includes.replace(',', '|') : null;
+
     return {
         props: {
             id: String, // Used to load entity
@@ -47,8 +49,8 @@ export function SingleEntityComponentMixinFactory(mixinOptions) {
                     let query = this.$store.getters[
                         'entities/' + toLowerEntityName + '/query'
                     ]();
-                    if (includes) {
-                        query = query.with(includes);
+                    if (includeWithQuery) {
+                        query = query.with(includeWithQuery);
                     }
                     query.whereId(this['current' + uniqueName + 'PK']);
                     let toReturn = query.get();
