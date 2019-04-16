@@ -32,6 +32,10 @@ export function FormComponentMixinFactory(mixinOptions) {
     let _uniqueName = internalName || entityName;
     let _currentEditTagName = null;
 
+    // Internal data to track CREATE mode
+    let _hasCreatedNew = false;
+    let _idBeforeCreate = null;
+
     return {
         props: {
             currentMode: String
@@ -60,9 +64,10 @@ export function FormComponentMixinFactory(mixinOptions) {
                 }
             }
         },
-        // Making sure we don't leave unsaved changes
+        // Making sure we don't leave unsaved changes if we're editing 
+        // the "root" entity (i.e. if this.item == null) 
         beforeDestroy: function () {
-            if (!this.IsViewMode) {
+            if (!this.IsViewMode && !this.item) {
                 this.cancelEdit();
             }
         },
@@ -71,14 +76,21 @@ export function FormComponentMixinFactory(mixinOptions) {
                 this.currentViewMode = MODES.VIEW_MODE;
                 this.undo(_currentEditTagName);
                 _currentEditTagName = null;
+                if (_hasCreatedNew) {
+                    _hasCreatedNew = false;
+                    this['local' + _uniqueName + 'PK'] = _idBeforeCreate;
+                    _idBeforeCreate = null;
+                }
             },
             enterEdit() {
-                // Cloning main entity
                 this.currentViewMode = MODES.EDIT_MODE;
                 _currentEditTagName = newGuid();
                 this.$store.commit('tagUndoMutation', _currentEditTagName);
             },
             async ['create' + _uniqueName]() {
+                _hasCreatedNew = true;
+                _idBeforeCreate = this['local' + _uniqueName + 'PK'];
+
                 let newEntity = await modelReference.createNew();
                 this['local' + _uniqueName + 'PK'] = newEntity.$id;
                 this.currentViewMode = MODES.EDIT_MODE;
@@ -108,6 +120,8 @@ export function FormComponentMixinFactory(mixinOptions) {
                     await this['refetch' + _uniqueName + 'WithIdCheck']();
 
                     this.currentViewMode = MODES.VIEW_MODE;
+                    _hasCreatedNew = false;
+                    _idBeforeCreate = null;
                 }
             }
         }
