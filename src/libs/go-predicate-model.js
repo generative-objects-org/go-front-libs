@@ -59,12 +59,12 @@ export function predicateToString(pred) {
             throw new Error(`Operator ${pred.operator} is not valid`);
 
         let result = '';
-        let left = pred.left.needsQuote
-            ? `"${pred.left.value}"`
-            : pred.left.value;
-        let right = pred.right.needsQuote
-            ? `"${pred.right.value}"`
-            : pred.right.value;
+        let left = pred.left.needsQuote ?
+            `"${pred.left.value}"` :
+            pred.left.value;
+        let right = pred.right.needsQuote ?
+            `"${pred.right.value}"` :
+            pred.right.value;
         if (
             operatorToTypeClassification[pred.operator] === OPERATOR_TYPE_BINARY
         ) {
@@ -84,12 +84,12 @@ export function predicateToString(pred) {
 
 export function isConditionGroup(pred) {
     return (
-        pred.hasOwnProperty('conditions') && pred.conditions instanceof Array
+        pred && pred.hasOwnProperty('conditions') && pred.conditions instanceof Array
     );
 }
 
 export function isCondition(pred) {
-    return pred.hasOwnProperty('left') && pred.hasOwnProperty('right');
+    return pred && pred.hasOwnProperty('left') && pred.hasOwnProperty('right');
 }
 
 /// To compare 2 predicates, we actually compare their string representation

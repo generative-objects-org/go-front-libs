@@ -1,13 +1,13 @@
 {
     "name": "go-front-libs",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "description": "JS Libraries for GO generated apps",
     "author": "GenerativeObjects",
     "private": true,
     "main": "dist/go-front-libs.js",
     "devDependencies": {
         "@babel/core": "^7.3.4",
-        "@vuex-orm/core": "^0.26.2",
+        "@vuex-orm/core": "^0.31.9",
         "babel": "^6.23.0",
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.3",
