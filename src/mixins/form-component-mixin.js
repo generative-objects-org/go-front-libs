@@ -73,27 +73,46 @@ export function FormComponentMixinFactory(mixinOptions) {
         },
         methods: {
             cancelEdit() {
-                this.currentViewMode = MODES.VIEW_MODE;
+                // Undoing all changes from last tag
                 this.undo(_currentEditTagName);
                 _currentEditTagName = null;
+
+                // If there was a previous item, switch back to it
                 if (_hasCreatedNew) {
                     _hasCreatedNew = false;
                     this['local' + _uniqueName + 'PK'] = _idBeforeCreate;
                     _idBeforeCreate = null;
                 }
+
+                // Switching mode
+                this.currentViewMode = MODES.VIEW_MODE;
+                this.$emit("form:cancel-edit");
             },
             enterEdit() {
-                this.currentViewMode = MODES.EDIT_MODE;
+                // Tagging current state before anything
                 _currentEditTagName = newGuid();
                 this.$store.commit('tagUndoMutation', _currentEditTagName);
+
+                // Switching mode
+                this.currentViewMode = MODES.EDIT_MODE;
+                this.$emit("form:enter-edit");
             },
             async ['create' + _uniqueName]() {
+                // Tagging current state before anything
+                _currentEditTagName = newGuid();
+                this.$store.commit('tagUndoMutation', _currentEditTagName);
+
+                // Keeping track of current Id
                 _hasCreatedNew = true;
                 _idBeforeCreate = this['local' + _uniqueName + 'PK'];
 
+                // Creating new entity
                 let newEntity = await modelReference.createNew();
                 this['local' + _uniqueName + 'PK'] = newEntity.$id;
+
+                // Switching mode
                 this.currentViewMode = MODES.EDIT_MODE;
+                this.$emit("form:item-created", newEntity);
             },
             async ['delete' + _uniqueName]() {
                 if (this.id) {
@@ -106,6 +125,7 @@ export function FormComponentMixinFactory(mixinOptions) {
                             entityName: _toLowerEntityName,
                             pks: [this['local' + _uniqueName + 'PK']]
                         });
+                        this.$emit("form:item-deleted", this.id);
                     }
                 }
             },
@@ -119,9 +139,13 @@ export function FormComponentMixinFactory(mixinOptions) {
                     // Refetch
                     await this['refetch' + _uniqueName + 'WithIdCheck']();
 
-                    this.currentViewMode = MODES.VIEW_MODE;
+                    // Clearing temp data
                     _hasCreatedNew = false;
                     _idBeforeCreate = null;
+
+                    // Switching mode
+                    this.currentViewMode = MODES.VIEW_MODE;
+                    this.$emit("form:item-saved", this['current' + _uniqueName + 'Item']);
                 }
             }
         }
