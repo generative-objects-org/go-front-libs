@@ -5,6 +5,7 @@ import * as predicateModel from './libs/go-predicate-model';
 import ormPlugin from './plugins';
 
 import * as formMixin from './mixins/form-component-mixin';
+import * as helperMixins from './mixins/helper-mixin';
 import * as multipleEntitiesMixin from './mixins/multiple-entities-component-mixin';
 import * as singleEntityMixin from './mixins/single-entity-component-mixin';
 
@@ -15,6 +16,7 @@ export const GOPredicate = predicateModel;
 
 // Mixins
 export const FormComponentMixin = formMixin;
+export const HelperMixins = helperMixins;
 export const MultipleEntitiesComponentMixin = multipleEntitiesMixin;
 export const SingleEntityComponentMixin = singleEntityMixin;
 
