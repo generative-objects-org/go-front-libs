@@ -146,7 +146,7 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
             [uniqueName + 'CollectionSort']() {
                 return {
                     sortColumn: this['current' + uniqueName + 'SortColumn'],
-                    isDescending: ['is' + uniqueName + 'SortDescending']
+                    isDescending: this['is' + uniqueName + 'SortDescending']
                 };
             }
         },
@@ -173,7 +173,7 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
 
                 let configuration = {};
                 if (this.externalFilter) {
-                    configuration.filter = GOPredicate.predicateToString(
+                    configuration.filter = predicateToString(
                         this.externalFilter
                     );
                 }
@@ -218,15 +218,13 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
                 }
 
                 // Adding sort options
-                if (this['current' + uniqueName + 'SortColumn'] !== null) {
+                if (this['current' + uniqueName + 'SortColumn']) {
                     configuration.sortColumn = this[
                         'current' + uniqueName + 'SortColumn'
                     ];
-                    configuration.sortOrder = [
+                    configuration.sortOrder = getSortString([
                         'is' + uniqueName + 'SortDescending'
-                    ]
-                        ? 'desc'
-                        : 'asc';
+                    ]);
                 }
 
                 // Getting data
@@ -280,4 +278,8 @@ export function MultipleEntitiesComponentMixinFactory(mixinOptions) {
             }
         }
     };
+}
+
+function getSortString(isDescending) {
+    return isDescending ? 'desc' : 'asc';
 }
