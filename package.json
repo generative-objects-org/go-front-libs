@@ -1,6 +1,6 @@
 {
     "name": "go-front-libs",
-    "version": "0.0.20",
+    "version": "0.1.0",
     "description": "JS Libraries for GO generated apps",
     "author": "GenerativeObjects",
     "private": true,
